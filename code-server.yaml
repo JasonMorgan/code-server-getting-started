@@ -1,0 +1,71 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: code-server
+spec:
+ ports:
+ - port: 8080
+   targetPort: 8080
+ selector:
+   app: code-server
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: code-server
+  name: code-server
+spec:
+  selector:
+    matchLabels:
+      app: code-server
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: code-server
+    spec:
+      initContainers:
+      # This container clones the desired git repo to the pvc volume.
+      - name: git-clone
+        image: alpine/git # Any image with git will do
+        args:
+          - clone
+          - https://github.com/spring-projects/spring-petclinic.git 
+          - /home/coder/petclinic/ # Put it in the volume
+        securityContext:
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+        volumeMounts:
+          - name: code-server-pv-claim
+            mountPath: /home/coder/petclinic/
+      containers:
+      - image: myusername/code-server # Put int the name of the container you created
+        imagePullPolicy: Always
+        name: code-server
+        args: ["/home/coder/petclinic/"]
+        env:
+        - name: PASSWORD
+          value: "some-password-you'll-remember"
+        - name: PORT
+          value: "8080"
+        volumeMounts:
+        - name: code-server-pv-claim
+          mountPath: /home/coder/petclinic
+      volumes:
+      - name: code-server-pv-claim
+        persistentVolumeClaim:
+          claimName: code-server-pv-claim
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: code-server-pv-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
