@@ -21,6 +21,10 @@ If you want to know more about the what and why checkout my blog post here. Long
 * port-forward
   * `kubectl port-forward svc/code-server 8080:80`
 
+## Stretch goals
+
+Setup an ingress and use https with cert-manager. If you're on AWS/GCP/Azure/DigitalOcean/etc, it's fairly straightforward to set up and configure an ingress that's compatible with cert-manager. If you want an example using contour you can find a good, but slightly dated, tutorial [here](https://projectcontour.io/guides/cert-manager/). If you follow the tutorial try using the ingress.yaml example to get your instance up and running with TLS. Be sure to replace the relevant values to match your domain.
+
 ## TL;DR
 
 * Clone and cd into this repo

@@ -1,0 +1,23 @@
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: code-server
+  namespace: code-server
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod # Use the name of your production certificate issuer
+    ingress.kubernetes.io/force-ssl-redirect: "true" # Force contour to make all connections https
+    kubernetes.io/ingress.class: contour
+    kubernetes.io/tls-acme: "true"
+spec:
+  tls: 
+  - secretName: code-server
+    hosts:
+    - code-server.my-domain.com
+  rules:
+  - host: code-server.my-domain.com
+    http:
+      paths:
+      - backend:
+          serviceName: code-server
+          servicePort: 80
