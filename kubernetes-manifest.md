@@ -4,11 +4,43 @@ In order to use code-server in a containerized environment there's a few things 
 
 ## Persistent disks
 
-If you want data to persisten between sessions it's worth starting out with a persisten disk, that way you won't randomly lose your work should your container get restarted. The example in the [manifest](code-server.yaml) assumes you have a default storage class defined. You can find more about storage classes [here](https://kubernetes.io/docs/concepts/storage/storage-classes/).
+```yaml
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: code-server-pv-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+```
+
+If you want data to persist between sessions it's worth starting out with a persistent disk, that way you won't lose your work should your container get restarted. The example in the [manifest](code-server.yaml) assumes you have a default storage class defined. You can find more about storage classes [here](https://kubernetes.io/docs/concepts/storage/storage-classes/).
 
 ## Init Container
 
-In my case I wanted to start out with my repo already pulled so our example has an init container spin up to pull down spring-petclinic. You should modify it to pull down whatever repo you want to work on.
+```yaml
+    initContainers:
+      # This container clones the desired git repo to the pvc volume.
+      - name: git-clone
+        image: alpine/git # Any image with git will do
+        args:
+          - clone
+          - https://github.com/spring-projects/spring-petclinic.git 
+          - /home/coder/petclinic/ # Put it in the volume
+        securityContext:
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+        volumeMounts:
+          - name: code-server-pv-claim
+            mountPath: /home/coder/petclinic/
+```
+
+In my case I wanted to start out with my repo already pulled so our example has an init container spin up to pull down spring-petclinic. Any container with git will work, I used alpine/git. Only significant caveat is you want to ensure you use rhte right user id, in our case the coder user is UID 1000, so you can read and modify the repo you pull down. Modify this section to pull down whatever repo you want to work on.
 
 ## Sprucing it up
 
