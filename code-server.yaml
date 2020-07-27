@@ -5,7 +5,7 @@ metadata:
  name: code-server
 spec:
  ports:
- - port: 8080
+ - port: 80
    targetPort: 8080
  selector:
    app: code-server
@@ -27,25 +27,22 @@ spec:
         app: code-server
     spec:
       initContainers:
-      # This container clones the desired git repo to the pvc volume.
+      # This container clones the desired git repo to the pvc volume. We're also going to chown the disk in case it got mounted as another user.
       - name: git-clone
-        image: alpine/git # Any image with git will do
+        image: my-dockerhub-username/code-server
+        command:
+          - bash
         args:
-          - clone
-          - https://github.com/spring-projects/spring-petclinic.git 
-          - /home/coder/petclinic/ # Put it in the volume
-        securityContext:
-          runAsUser: 1000
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
+          - -c
+          - "sudo chown -R coder:coder /home/coder/scratch && git clone https://github.com/spring-projects/spring-petclinic.git /home/coder/scratch/spring-petclinic" 
         volumeMounts:
           - name: code-server-pv-claim
-            mountPath: /home/coder/petclinic/
+            mountPath: /home/coder/scratch
       containers:
-      - image: myusername/code-server # Put int the name of the container you created
+      - image: my-dockerhub-username/code-server
         imagePullPolicy: Always
         name: code-server
-        args: ["/home/coder/petclinic/"]
+        args: ["/home/coder/scratch/spring-petclinic/"]
         env:
         - name: PASSWORD
           value: "some-password-you'll-remember"
@@ -53,7 +50,7 @@ spec:
           value: "8080"
         volumeMounts:
         - name: code-server-pv-claim
-          mountPath: /home/coder/petclinic
+          mountPath: /home/coder/scratch
       volumes:
       - name: code-server-pv-claim
         persistentVolumeClaim:
@@ -68,4 +65,4 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 5Gi
