@@ -1,6 +1,6 @@
 # Getting started running code-server in Kubernetes
 
-If you want to know more about the what and why checkout my blog post here. Long story short code-server is a tool that allows you to run vscode remotely. In this case we're going to run it directly in our kubernetes cluster so we can natively interact with our kubernetes environment.
+Get started running vscode in your kubernetes cluster with code-server. code-server is an open source project from the folks at coder.com that makes it easy to run and manage a cloud based vscode instance that you can connect to and operate remotely. This repo covers how to configure your own docker container to run vscode in kubernetes and how to deploy an instance that you can work with. While you can deploy code-server in a number of ways, including on a vm, in this case we're going to run it directly in our kubernetes cluster so we can natively interact with our kubernetes environment. This guide covers the basics of how to get up and running but I'll caution you right now we only lightly touch on setting up TLS. Do not deploy code-server in your cluster and expose it to the internet without an https connection. With that lets get started!
 
 ## What you'll need
 
