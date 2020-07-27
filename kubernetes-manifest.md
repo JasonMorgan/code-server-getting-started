@@ -24,23 +24,20 @@ If you want data to persist between sessions it's worth starting out with a pers
 
 ```yaml
     initContainers:
-      # This container clones the desired git repo to the pvc volume.
+      # This container clones the desired git repo to the pvc volume. We're also going to chown the disk in case it got mounted as another user.
       - name: git-clone
-        image: alpine/git # Any image with git will do
+        image: my-dockerhub-username/code-server
+        command:
+          - bash
         args:
-          - clone
-          - https://github.com/spring-projects/spring-petclinic.git 
-          - /home/coder/petclinic/ # Put it in the volume
-        securityContext:
-          runAsUser: 1000
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
+          - -c
+          - "sudo chown -R coder:coder /home/coder/scratch && git clone https://github.com/spring-projects/spring-petclinic.git /home/coder/scratch/spring-petclinic" 
         volumeMounts:
           - name: code-server-pv-claim
-            mountPath: /home/coder/petclinic/
+            mountPath: /home/coder/scratch
 ```
 
-In my case I wanted to start out with my repo already pulled so our example has an init container spin up to pull down spring-petclinic. Any container with git will work, I used alpine/git. Only significant caveat is you want to ensure you use rhte right user id, in our case the coder user is UID 1000, so you can read and modify the repo you pull down. Modify this section to pull down whatever repo you want to work on.
+In my case I wanted to start out with my repo already pulled so our example has an init container spin up to pull down spring-petclinic. In order to get my user set up right and the repo cloned on AWS I had to chown the persisten volume so I ended up using the code-server container itself to do the work.  Modify this section to pull down whatever repo you want to work on.
 
 ## Sprucing it up
 
