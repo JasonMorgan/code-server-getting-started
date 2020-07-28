@@ -20,7 +20,11 @@ Get started running vscode in your kubernetes cluster with code-server. Code-ser
 * deploy your app
   * `kubectl apply -f code-server.yaml`
 * port-forward
-  * `kubectl port-forward svc/code-server 8080:80`
+  * `kubectl port-forward svc/code-server 8080:8080`
+* login
+  * browse to localhost:8080
+  * enter the password you set in your manifest
+  * start working in your fancy web based editor
 
 ## Stretch goals
 
