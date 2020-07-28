@@ -5,7 +5,7 @@ metadata:
  name: code-server
 spec:
  ports:
- - port: 80
+ - port: 8080
    targetPort: 8080
  selector:
    app: code-server
@@ -27,22 +27,27 @@ spec:
         app: code-server
     spec:
       initContainers:
-      # This container clones the desired git repo to the pvc volume. We're also going to chown the disk in case it got mounted as another user.
+      # This container clones the desired git repo to the pvc volume.
       - name: git-clone
-        image: my-dockerhub-username/code-server
+        image: my-docker-hub-username/code-server # Any image with git will do
         command:
           - bash
         args:
-          - -c
-          - "sudo chown -R coder:coder /home/coder/scratch && git clone https://github.com/spring-projects/spring-petclinic.git /home/coder/scratch/spring-petclinic" 
+          - /home/coder/prep.sh # Run the prep script from our configmap
         volumeMounts:
           - name: code-server-pv-claim
-            mountPath: /home/coder/scratch
+            mountPath: /home/coder/
+          - name: prep-script
+            mountPath: /home/coder/prep.sh
+            subPath: prep.sh
+        env:
+        - name: REPO
+          value: https://github.com/spring-projects/spring-petclinic.git
       containers:
-      - image: my-dockerhub-username/code-server
+      - image: my-docker-hub-username/code-server
         imagePullPolicy: Always
         name: code-server
-        args: ["/home/coder/scratch/spring-petclinic/"]
+        args: ["/home/coder/projects/"]
         env:
         - name: PASSWORD
           value: "some-password-you'll-remember"
@@ -50,11 +55,15 @@ spec:
           value: "8080"
         volumeMounts:
         - name: code-server-pv-claim
-          mountPath: /home/coder/scratch
+          mountPath: /home/coder/
       volumes:
       - name: code-server-pv-claim
         persistentVolumeClaim:
           claimName: code-server-pv-claim
+      - name: prep-script
+        configMap:
+          name: prep-script
+          defaultMode: 0744
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -66,3 +75,15 @@ spec:
   resources:
     requests:
       storage: 5Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prep-script
+data:
+  prep.sh: |
+    #!/bin/bash
+    sudo chown -R coder:coder /home/coder/
+    mkdir projects
+    cd /home/coder/projects/
+    git clone $REPO || true
