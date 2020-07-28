@@ -23,7 +23,7 @@ Get started running vscode in your kubernetes cluster with code-server. code-ser
 
 ## Stretch goals
 
-Setup an ingress and use https with cert-manager. If you're on AWS/GCP/Azure/DigitalOcean/etc, it's fairly straightforward to set up and configure an ingress that's compatible with cert-manager. If you want an example using contour you can find a good, but slightly dated, tutorial [here](https://projectcontour.io/guides/cert-manager/). If you follow the tutorial try using the ingress.yaml example to get your instance up and running with TLS. Be sure to replace the relevant values to match your domain.
+Setup an ingress and use https with cert-manager. If you're on AWS/GCP/Azure/DigitalOcean/etc, it's fairly straightforward to set up and configure an ingress that's compatible with cert-manager. After trying a few things I decided to go with nginx, they have a good, but slightly dated walkthrough [here](https://cert-manager.io/docs/tutorials/acme/ingress/). If you follow the tutorial try using the [ingress example](ingress.yaml) to get your instance up and running with TLS. Be sure to replace the relevant values to match your domain and obviously get cert-manager configured first.
 
 ## TL;DR
 
