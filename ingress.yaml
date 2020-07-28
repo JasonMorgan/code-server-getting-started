@@ -5,9 +5,9 @@ metadata:
   name: code-server
   namespace: code-server
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod # Use the name of your production certificate issuer
-    ingress.kubernetes.io/force-ssl-redirect: "true" # Force contour to make all connections https
-    kubernetes.io/ingress.class: contour
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     kubernetes.io/tls-acme: "true"
 spec:
   tls: 
@@ -20,4 +20,4 @@ spec:
       paths:
       - backend:
           serviceName: code-server
-          servicePort: 80
+          servicePort: 8080
