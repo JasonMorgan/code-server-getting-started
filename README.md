@@ -8,6 +8,7 @@ Get started running vscode in your kubernetes cluster with code-server. Code-ser
   * Can be docker-desktop, minikube, or kind
 * kubectl
 * docker
+* a docker hub account or other registry to push to
 
 ## Steps
 
