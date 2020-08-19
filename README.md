@@ -37,7 +37,7 @@ Setup an ingress and use https with cert-manager. If you're on AWS/GCP/Azure/Dig
   * `cp -R ~/.vscode .`
 * Change the Dockerfile to install any dependencies required by your extensions
 * build the image
-  * `docker build -t my-docker-hub-username/code-server`
+  * `docker build -t my-docker-hub-username/code-server .`
 * push your image to dockerhub
   * `docker push my-docker-hub-username/code-server`
 * update the code-server.yaml file
