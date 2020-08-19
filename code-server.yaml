@@ -29,7 +29,7 @@ spec:
       initContainers:
       # This container clones the desired git repo to the pvc volume.
       - name: git-clone
-        image: my-docker-hub-username/code-server # Any image with git will do
+        image: jasonmorgan/code-server # using my code-server container as it already has the user and tools I need.
         command:
           - bash
         args:
@@ -44,7 +44,7 @@ spec:
         - name: REPO
           value: https://github.com/spring-projects/spring-petclinic.git
       containers:
-      - image: my-docker-hub-username/code-server
+      - image: jasonmorgan/code-server
         imagePullPolicy: Always
         name: code-server
         args: ["/home/coder/projects/"]
