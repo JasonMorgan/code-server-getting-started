@@ -42,7 +42,7 @@ spec:
             subPath: prep.sh
         env:
         - name: REPO
-          value: https://github.com/spring-projects/spring-petclinic.git
+          value: https://github.com/JasonMorgan/code-server-getting-started.git
       containers:
       - image: jasonmorgan/code-server
         imagePullPolicy: Always
